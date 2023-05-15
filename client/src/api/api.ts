@@ -26,7 +26,19 @@ export const api = createApi({
   ],
   endpoints: (builder) => ({
     getProducts: builder.query<Product[], { page?: number; count?: number }>({
-      query: ({ page, count }) => `/products?page=${page}&count=${count}`,
+      query: ({ page, count }) => {
+        let url = '/products';
+
+        if (page && count) {
+          url += `?page=${page}&count=${count}`;
+        } else if (page) {
+          url += `?page=${page}`;
+        } else if (count) {
+          url += `?count=${count}`;
+        }
+
+        return url;
+      },
       providesTags: ['Product'],
     }),
 
@@ -49,8 +61,19 @@ export const api = createApi({
       Review[],
       { productId: number; page?: number; count?: number }
     >({
-      query: ({ productId, page, count }) =>
-        `/reviews?product_id=${productId}&page=${page}&count=${count}`,
+      query: ({ productId, page, count }) => {
+        let url = `/reviews?product_id=${productId}`;
+
+        if (page && count) {
+          url += `&page=${page}&count=${count}`;
+        } else if (page) {
+          url += `&page=${page}`;
+        } else if (count) {
+          url += `&count=${count}`;
+        }
+
+        return url;
+      },
       providesTags: ['Review'],
     }),
 
@@ -63,8 +86,20 @@ export const api = createApi({
       Question[],
       { productId: number; page?: number; count?: number }
     >({
-      query: ({ productId, page, count }) =>
-        `/qa/questions?product_id=${productId}&page=${page}&count=${count}`,
+      query: ({ productId, page, count }) => {
+        let url = `/qa/questions?product_id=${productId}`;
+
+        if (page && count) {
+          url += `&page=${page}&count=${count}`;
+        } else if (page) {
+          url += `&page=${page}`;
+        } else if (count) {
+          url += `&count=${count}`;
+        }
+
+        return url;
+      },
+      transformResponse: (response: { results: Question[] }) => response.results,
       providesTags: ['Question'],
     }),
 
@@ -72,8 +107,20 @@ export const api = createApi({
       Answer[],
       { questionId: number; page?: number; count?: number }
     >({
-      query: ({ questionId, page, count }) =>
-        `/qa/questions/${questionId}/answers?page=${page}&count=${count}`,
+      query: ({ questionId, page, count }) => {
+        let url = `/qa/questions/${questionId}/answers`;
+
+        if (page && count) {
+          url += `?page=${page}&count=${count}`;
+        } else if (page) {
+          url += `?page=${page}`;
+        } else if (count) {
+          url += `?count=${count}`;
+        }
+
+        return url;
+      },
+
       providesTags: ['Answer'],
     }),
 

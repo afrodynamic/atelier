@@ -4,15 +4,27 @@ import { Provider } from 'react-redux';
 
 import { store } from '../app/store';
 import {
+  productAnswersCountData,
   productAnswersData,
+  productAnswersPagedCountData,
+  productAnswersPagedData,
   productCartData,
   productDetailsData,
+  productQuestionsCountData,
   productQuestionsData,
+  productQuestionsPagedCountData,
+  productQuestionsPagedData,
   productRelatedData,
   productReviewMetadataData,
+  productReviewsCountData,
   productReviewsData,
+  productReviewsPagedCountData,
+  productReviewsPagedData,
   productStylesData,
+  productsCountData,
   productsData,
+  productsPagedCountData,
+  productsPagedData,
   testAnswerData,
   testCartItemData,
   testQuestionData,
@@ -47,14 +59,55 @@ describe('Product Detail API', () => {
   const questionId = 640799;
   const answerId = 5992076;
 
-  test('useGetProductsQuery hook should return products', async() => {
-    const { result } = renderHook(() => useGetProductsQuery({}), { wrapper });
+  describe('useGetProductDetailsQuery', () => {
+    test('useGetProductsQuery hook should return products', async() => {
+      const { result } = renderHook(() => useGetProductsQuery({}), { wrapper });
 
-    await waitFor(() => {
-      expect(result.current.isFetching).toEqual(false);
+      await waitFor(() => {
+        expect(result.current.isFetching).toEqual(false);
+      });
+
+      expect(result.current.data).toEqual(productsData);
     });
 
-    expect(result.current.data).toEqual(productsData);
+    test('useGetProductsQuery hook should return paged products', async() => {
+      const { result } = renderHook(() => useGetProductsQuery({ page: 2 }), {
+        wrapper,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isFetching).toEqual(false);
+      });
+
+      expect(result.current.data).toEqual(productsPagedData);
+    });
+
+    test('useGetProductsQuery hook should return products with count', async() => {
+      const { result } = renderHook(() => useGetProductsQuery({ count: 2 }), {
+        wrapper,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isFetching).toEqual(false);
+      });
+
+      expect(result.current.data).toEqual(productsCountData);
+    });
+
+    test('useGetProductsQuery hook should return paged with count products', async() => {
+      const { result } = renderHook(
+        () => useGetProductsQuery({ page: 2, count: 2 }),
+        {
+          wrapper,
+        }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isFetching).toEqual(false);
+      });
+
+      expect(result.current.data).toEqual(productsPagedCountData);
+    });
   });
 
   test('useGetProductDetailsQuery hook should return product details', async() => {
@@ -93,17 +146,59 @@ describe('Product Detail API', () => {
     expect(result.current.data).toEqual(productRelatedData);
   });
 
-  test('useGetReviewsQuery hook should return reviews', async() => {
-    const { result } = renderHook(
-      () => useGetReviewsQuery({ productId: productId }),
-      { wrapper }
-    );
+  describe('useGetReviewsQuery', () => {
+    test('useGetReviewsQuery hook should return reviews', async() => {
+      const { result } = renderHook(
+        () => useGetReviewsQuery({ productId: productId }),
+        { wrapper }
+      );
 
-    await waitFor(() => {
-      expect(result.current.isFetching).toEqual(false);
+      await waitFor(() => {
+        expect(result.current.isFetching).toEqual(false);
+      });
+
+      expect(result.current.data).toEqual(productReviewsData);
     });
 
-    expect(result.current.data).toEqual(productReviewsData);
+    test('useGetReviewsQuery hook should return paged reviews', async() => {
+      const { result } = renderHook(
+        () => useGetReviewsQuery({ productId: productId, page: 2 }),
+        { wrapper }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isFetching).toEqual(false);
+      });
+
+      // note: the API returns an incorrect page number of 5x the requested page number
+      expect(result.current.data).toEqual(productReviewsPagedData);
+    });
+
+    test('useGetReviewsQuery hook should return reviews with count', async() => {
+      const { result } = renderHook(
+        () => useGetReviewsQuery({ productId: productId, count: 2 }),
+        { wrapper }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isFetching).toEqual(false);
+      });
+
+      expect(result.current.data).toEqual(productReviewsCountData);
+    });
+
+    test('useGetReviewsQuery hook should return paged with count reviews', async() => {
+      const { result } = renderHook(
+        () => useGetReviewsQuery({ productId: productId, page: 2, count: 2 }),
+        { wrapper }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isFetching).toEqual(false);
+      });
+
+      expect(result.current.data).toEqual(productReviewsPagedCountData);
+    });
   });
 
   test('useGetReviewsMetadataQuery hook should return reviews metadata', async() => {
@@ -118,30 +213,112 @@ describe('Product Detail API', () => {
     expect(result.current.data).toEqual(productReviewMetadataData);
   });
 
-  test('useGetQuestionsQuery hook should return questions', async() => {
-    const { result } = renderHook(
-      () => useGetQuestionsQuery({ productId: productId }),
-      { wrapper }
-    );
+  describe('useGetQuestionsQuery', () => {
+    test('useGetQuestionsQuery hook should return questions', async() => {
+      const { result } = renderHook(
+        () => useGetQuestionsQuery({ productId: productId }),
+        { wrapper }
+      );
 
-    await waitFor(() => {
-      expect(result.current.isFetching).toEqual(false);
+      await waitFor(() => {
+        expect(result.current.isFetching).toEqual(false);
+      });
+
+      expect(result.current.data).toEqual(productQuestionsData.results);
     });
 
-    expect(result.current.data).toEqual(productQuestionsData);
+    test('useGetQuestionsQuery hook should return paged questions', async() => {
+      const { result } = renderHook(
+        () => useGetQuestionsQuery({ productId: productId, page: 1 }),
+        { wrapper }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isFetching).toEqual(false);
+      });
+
+      expect(result.current.data).toEqual(productQuestionsPagedData.results);
+    });
+
+    test('useGetQuestionsQuery hook should return questions with count', async() => {
+      const { result } = renderHook(
+        () => useGetQuestionsQuery({ productId: productId, count: 2 }),
+        { wrapper }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isFetching).toEqual(false);
+      });
+
+      expect(result.current.data).toEqual(productQuestionsCountData.results);
+    });
+
+    test('useGetQuestionsQuery hook should return paged with count questions', async() => {
+      const { result } = renderHook(
+        () => useGetQuestionsQuery({ productId: productId, page: 1, count: 2 }),
+        { wrapper }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isFetching).toEqual(false);
+      });
+
+      expect(result.current.data).toEqual(productQuestionsPagedCountData.results);
+    });
   });
 
-  test('useGetAnswersQuery', async() => {
-    const { result } = renderHook(
-      () => useGetAnswersQuery({ questionId: questionId }),
-      { wrapper }
-    );
+  describe('useGetAnswersQuery', () => {
+    test('useGetAnswersQuery', async() => {
+      const { result } = renderHook(
+        () => useGetAnswersQuery({ questionId: questionId }),
+        { wrapper }
+      );
 
-    await waitFor(() => {
-      expect(result.current.isFetching).toEqual(false);
+      await waitFor(() => {
+        expect(result.current.isFetching).toEqual(false);
+      });
+
+      expect(result.current.data).toEqual(productAnswersData);
     });
 
-    expect(result.current.data).toEqual(productAnswersData);
+    test('useGetAnswersQuery hook should return paged answers', async() => {
+      const { result } = renderHook(
+        () => useGetAnswersQuery({ questionId: questionId, page: 1 }),
+        { wrapper }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isFetching).toEqual(false);
+      });
+
+      expect(result.current.data).toEqual(productAnswersPagedData);
+    });
+
+    test('useGetAnswersQuery hook should return answers with count', async() => {
+      const { result } = renderHook(
+        () => useGetAnswersQuery({ questionId: questionId, count: 2 }),
+        { wrapper }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isFetching).toEqual(false);
+      });
+
+      expect(result.current.data).toEqual(productAnswersCountData);
+    });
+
+    test('useGetAnswersQuery hook should return paged with count answers', async() => {
+      const { result } = renderHook(
+        () => useGetAnswersQuery({ questionId: questionId, page: 1, count: 2 }),
+        { wrapper }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isFetching).toEqual(false);
+      });
+
+      expect(result.current.data).toEqual(productAnswersPagedCountData);
+    });
   });
 
   test('useGetCartQuery', async() => {
