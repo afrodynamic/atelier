@@ -1,7 +1,6 @@
 # Atelier
 
----
-[![build](https://github.com/CapstoneProjectRFE2303/atelier/actions/workflows/pr-testing.yml/badge.svg)](https://github.com/CapstoneProjectRFE2303/atelier/actions/workflows/pr-testing.yml)
+[![build](https://github.com/afrodynamic/atelier/actions/workflows/pr-testing.yml/badge.svg)](https://github.com/afrodynamic/atelier/actions/workflows/pr-testing.yml)
 
 Atelier is a retail website project for Hack Reactor's "Front End Capstone".
 
@@ -14,10 +13,11 @@ Atelier is a retail website project for Hack Reactor's "Front End Capstone".
   * [Usage](#usage)
     * [Requirements](#requirements)
     * [Setup and Running](#setup-and-running)
+  * [Demo](#demo)
 
 ## Description
 
-This project is a complete redesign of the client-facing retail web-portal to address concerns about outdated design and low sales numbers. The new user interface will allow customers to browse items in the retail catalog with ease.
+This project is a complete redesign of a client-facing retail web-portal to address concerns about outdated design and low sales numbers. The new user interface will allow customers to browse items in the retail catalog with ease.
 
 ### Product Detail Page
 
@@ -38,8 +38,8 @@ The item detail page will consist of distinct modules. Each module will display 
 
 You will need the following dependencies to run this project:
 
-* `node`/`npm`, to manage project dependencies ([download](<https://nodejs.org/en/download>))
-* `git`, for cloning the project ([download](<https://git-scm.com/downloads>))
+* `node` / `npm`, to manage project dependencies ([download](https://nodejs.org/en/download))
+* `git`, for cloning the project ([download](https://git-scm.com/downloads))
 
 ### Setup and Running
 
@@ -48,7 +48,7 @@ To run this project, please follow these steps:
 1. Clone the repository to your local machine
 
    ```shell
-   git clone https://github.com/CapstoneProjectRFE2303/atelier.git
+   git clone https://github.com/afrodynamic/atelier.git
    ```
 
 2. Navigate to the cloned repository directory
@@ -83,8 +83,30 @@ To run this project, please follow these steps:
 
 5. Open a browser and navigate to <http://localhost:1234> to view the running project
 
-6. Optionally run the project's `jest`test suite using `npm test`
+6. Optionally run the project's `jest` test suite using `npm test`
 
    ```shell
    npm test
    ```
+
+## Demo
+
+<h3 align="center">Product Overview</h3>
+
+![Product Overview Component](https://drive.google.com/uc?export=download&id=1BfwXDRmw-K1Vu9iZ5zjPOjFEIjhnO5iS)
+
+<h3 align="center">Related Products</h3>
+
+![Related Products Component](https://drive.google.com/uc?export=download&id=1Eyb9vPHqdaz0xg31dUg-G8bh9ThjCLKa)
+
+<h3 align="center">User Saved Outfits</h3>
+
+![Saved Outfits Component](https://drive.google.com/uc?export=download&id=1n6NuEm1XCXfBkZCMWLtd7nSVdDKckDdh)
+
+<h3 align="center">Questions and Answers</h3>
+
+![Questions and Answers Component](https://drive.google.com/uc?export=download&id=1f47zWN6D9jnXUlilvzuFkv9t7efspScO)
+
+<h3 align="center">Ratings and Reviews</h3>
+
+![Ratings and Reviews Component](https://drive.google.com/uc?export=download&id=1mA0i2tV_M9iLDFEAqTYrEWHmU9Al3PAx)
