@@ -1,3 +1,5 @@
+import { faker } from '@faker-js/faker';
+
 export const validateImageURL = async(url: string): Promise<boolean> => {
   const excludedUrls = ['input.photos', 'more photos', 'a'];
 
@@ -29,24 +31,29 @@ export const validateImageURL = async(url: string): Promise<boolean> => {
 export const validateImages = async(
   images: { url: string; thumbnail_url?: string | undefined }[]
 ): Promise<{ url: string; thumbnail_url?: string | undefined }[]> => {
-  const filteredPhotos = await Promise.all(
+  const validatedImages = await Promise.all(
     images.map(async(image) => {
-      if (!image || !image.url) {
-        return null;
+      const isValidImageUrl = await validateImageURL(image.url);
+      const isValidThumbnailUrl =
+        !image.thumbnail_url ||
+        (image.thumbnail_url && (await validateImageURL(image.thumbnail_url)));
+
+      if (isValidImageUrl && isValidThumbnailUrl) {
+        return image;
+      } else {
+        const validImageUrl = isValidImageUrl ? image.url : faker.image.url();
+        const validThumbnailUrl =
+          isValidThumbnailUrl || !image.thumbnail_url
+            ? image.thumbnail_url
+            : faker.image.url();
+
+        return {
+          url: validImageUrl,
+          thumbnail_url: validThumbnailUrl,
+        };
       }
-
-      const isValid =
-        (await validateImageURL(image.url)) &&
-        (!image.thumbnail_url ||
-          (image.thumbnail_url &&
-            (await validateImageURL(image.thumbnail_url))));
-
-      return isValid ? image : null;
     })
   );
 
-  return filteredPhotos.filter((photo) => photo !== null) as {
-    url: string;
-    thumbnail_url?: string | undefined;
-  }[];
+  return validatedImages;
 };

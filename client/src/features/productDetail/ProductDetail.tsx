@@ -7,11 +7,11 @@ import { RelatedItemsAndOutfitCreation } from './RelatedItemsAndOutfitCreation/R
 
 export const ProductDetail: FC = () => {
   return (
-    <div data-testid='product-detail'>
+    <div className='container mx-auto my-8' data-testid='product-detail'>
       <ProductOverview />
+      <RelatedItemsAndOutfitCreation />
       <QuestionsAndAnswers />
       <RatingsAndReviews />
-      <RelatedItemsAndOutfitCreation />
     </div>
   );
 };

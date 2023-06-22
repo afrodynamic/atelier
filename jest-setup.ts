@@ -4,7 +4,7 @@ import 'whatwg-fetch';
 
 import { handlers } from './client/src/utils/apiHandlers';
 
-const server = setupServer(...handlers);
+export const server = setupServer(...handlers);
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());

@@ -1,3 +1,9 @@
+export interface Image {
+  id?: number;
+  url: string;
+  thumbnail_url?: string;
+}
+
 export interface Review {
   review_id: number;
   rating: number;
@@ -8,7 +14,7 @@ export interface Review {
   date: string;
   reviewer_name: string;
   helpfulness: number;
-  photos: { id: number; url: string }[];
+  photos: Image[];
   markedHelpful: boolean;
 }
 
@@ -18,7 +24,7 @@ export interface Answer {
   date: string;
   answerer_name: string;
   helpfulness: number;
-  photos: { id: number; url: string }[];
+  photos: Image[];
   reported: boolean;
   markedHelpful: boolean;
 }
@@ -40,13 +46,21 @@ export interface Style {
   original_price: string;
   sale_price: string;
   'default?': boolean;
-  photos: { thumbnail_url: string; url: string }[];
-  skus: { [skuId: string]: { quantity: number; size: string } };
+  photos: Image[];
+  skus: { [skuId: number]: { quantity: number; size: string } };
 }
 
 export interface CartItem {
-  [sku_id: number]: number;
+  skuId: number;
+  quantity: number;
+  size: string;
+  productName: string;
+  styleName: string;
+  price: number;
+  image: string;
 }
+
+export type Cart = Record<string, CartItem[]>;
 
 export interface ReviewsMetadata {
   ratings: {

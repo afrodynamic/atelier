@@ -17,12 +17,17 @@ export const api = createApi({
   baseQuery,
   tagTypes: [
     'Product',
-    'Style',
-    'Review',
-    'Question',
-    'Answer',
+    'RelatedProducts',
+    'Styles',
+    'Reviews',
+    'Questions',
+    'Answers',
     'ReviewsMetadata',
     'Cart',
+    'ProductsPaginatedList',
+    'QuestionsPaginatedList',
+    'AnswersPaginatedList',
+    'ReviewsPaginatedList'
   ],
   endpoints: (builder) => ({
     getProducts: builder.query<Product[], { page?: number; count?: number }>({
@@ -39,7 +44,8 @@ export const api = createApi({
 
         return url;
       },
-      providesTags: ['Product'],
+      providesTags: (result, error, { page, count }) =>
+        result ? [{ type: 'ProductsPaginatedList', page, count }] : [],
     }),
 
     getProductDetails: builder.query<Product, number>({
@@ -49,12 +55,39 @@ export const api = createApi({
 
     getProductStyles: builder.query<Style[], number>({
       query: (productId) => `products/${productId}/styles`,
-      providesTags: ['Style'],
+      transformResponse: (response: { results: Style[] }) => response.results,
+      providesTags: ['Styles'],
     }),
+
+    getRelatedProductsStyles: builder.query<Style[], number[]>({
+      queryFn: async(productIds, api, options, fetchWithBQ) => {
+        const styles: Style[] = [];
+
+        for (const productId of productIds) {
+          const result = await fetchWithBQ(`products/${productId}/styles`);
+          if (result.data) {
+            const productStyles: Style[] = result.data.results;
+            const defaultStyle = productStyles.find((style) => style['default?']);
+
+            if (defaultStyle) {
+              styles.push(defaultStyle);
+            } else if (productStyles.length > 0) {
+              styles.push(productStyles[0]);
+            }
+          } else {
+            console.error(result.error);
+          }
+        }
+
+        return { data: styles };
+      },
+      providesTags: ['RelatedProducts'],
+    }),
+
 
     getRelatedProducts: builder.query<number[], number>({
       query: (productId) => `/products/${productId}/related`,
-      providesTags: ['Product'],
+      providesTags: ['RelatedProducts'],
     }),
 
     getReviews: builder.query<
@@ -74,7 +107,9 @@ export const api = createApi({
 
         return url;
       },
-      providesTags: ['Review'],
+      transformResponse: (response: { results: Review[] }) => response.results,
+      providesTags: (result, error, { productId, page, count }) =>
+        result ? [{ type: 'Reviews', productId }, { type: 'ReviewsPaginatedList', page, count }] : [],
     }),
 
     getReviewsMetadata: builder.query<ReviewsMetadata, number>({
@@ -100,7 +135,8 @@ export const api = createApi({
         return url;
       },
       transformResponse: (response: { results: Question[] }) => response.results,
-      providesTags: ['Question'],
+      providesTags: (result, error, { productId, page, count }) =>
+        result ? [{ type: 'Questions', productId }, { type: 'QuestionsPaginatedList', page, count }] : [],
     }),
 
     getAnswers: builder.query<
@@ -120,8 +156,8 @@ export const api = createApi({
 
         return url;
       },
-
-      providesTags: ['Answer'],
+      providesTags: (result, error, { questionId, page, count }) =>
+        result ? [{ type: 'Answers', questionId }, { type: 'AnswersPaginatedList', questionId, page, count }] : [],
     }),
 
     getCart: builder.query<CartItem[], void>({
@@ -137,13 +173,13 @@ export const api = createApi({
         url: '/qa/questions',
         method: 'POST',
         body: {
-          body,
-          name,
-          email,
-          product_id,
-        },
+          body: body,
+          name: name,
+          email: email,
+          product_id: Number(product_id),
+        }
       }),
-      invalidatesTags: ['Question'],
+      invalidatesTags: ['Questions'],
     }),
 
     addAnswer: builder.mutation<
@@ -166,7 +202,7 @@ export const api = createApi({
           photos,
         },
       }),
-      invalidatesTags: ['Answer'],
+      invalidatesTags: ['Answers'],
     }),
 
     addReview: builder.mutation<
@@ -188,7 +224,7 @@ export const api = createApi({
         method: 'POST',
         body: review,
       }),
-      invalidatesTags: ['Review'],
+      invalidatesTags: ['Reviews'],
     }),
 
     addToCart: builder.mutation<void, number>({
@@ -205,7 +241,7 @@ export const api = createApi({
         url: `/qa/questions/${questionId}/helpful`,
         method: 'PUT',
       }),
-      invalidatesTags: ['Question'],
+      invalidatesTags: ['Questions'],
     }),
 
     reportQuestion: builder.mutation<void, number>({
@@ -213,7 +249,7 @@ export const api = createApi({
         url: `/qa/questions/${questionId}/report`,
         method: 'PUT',
       }),
-      invalidatesTags: ['Question'],
+      invalidatesTags: ['Questions'],
     }),
 
     markAnswerHelpful: builder.mutation<void, number>({
@@ -221,7 +257,7 @@ export const api = createApi({
         url: `/qa/answers/${answerId}/helpful`,
         method: 'PUT',
       }),
-      invalidatesTags: ['Answer'],
+      invalidatesTags: ['Questions', 'Answers'],
     }),
 
     reportAnswer: builder.mutation<void, number>({
@@ -229,8 +265,24 @@ export const api = createApi({
         url: `/qa/answers/${answerId}/report`,
         method: 'PUT',
       }),
-      invalidatesTags: ['Answer'],
+      invalidatesTags: ['Questions', 'Answers'],
     }),
+
+    markReviewHelpful: builder.mutation<void, number>({
+      query: (reviewId) => ({
+        url: `/reviews/${reviewId}/helpful`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Reviews'],
+    }),
+
+    reportReview: builder.mutation<void, number>({
+      query: (reviewId) => ({
+        url: `/reviews/${reviewId}/report`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Reviews'],
+    })
   }),
 });
 
@@ -238,6 +290,7 @@ export const {
   useGetProductsQuery,
   useGetProductDetailsQuery,
   useGetProductStylesQuery,
+  useGetRelatedProductsStylesQuery,
   useGetRelatedProductsQuery,
   useGetReviewsQuery,
   useGetReviewsMetadataQuery,
@@ -246,10 +299,12 @@ export const {
   useGetCartQuery,
   useAddQuestionMutation,
   useAddAnswerMutation,
-  useMarkQuestionHelpfulMutation,
-  useMarkAnswerHelpfulMutation,
-  useReportQuestionMutation,
-  useReportAnswerMutation,
   useAddReviewMutation,
   useAddToCartMutation,
+  useMarkQuestionHelpfulMutation,
+  useReportQuestionMutation,
+  useMarkAnswerHelpfulMutation,
+  useReportAnswerMutation,
+  useMarkReviewHelpfulMutation,
+  useReportReviewMutation,
 } = api;

@@ -131,7 +131,7 @@ describe('Product Detail API', () => {
       expect(result.current.isFetching).toEqual(false);
     });
 
-    expect(result.current.data).toEqual(productStylesData);
+    expect(result.current.data).toEqual(productStylesData.results);
   });
 
   test('useGetRelatedProductsQuery hook should return related products', async() => {
